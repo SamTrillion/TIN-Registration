@@ -60,6 +60,12 @@
         }
     </style>
     <script>
+        // --- SINGLE SOURCE OF TRUTH FOR PRICE ---
+        // To change the price, ONLY modify the TIN_PRICE_NUMERIC value below.
+        const TIN_PRICE_NUMERIC = 4000; // THE SINGLE PRICE CONTROL POINT (e.g., change 3500 to 4000)
+        // Derived variable: Automatically formats the number with the Naira symbol and comma.
+        const TIN_PRICE_NAIRA = `₦${TIN_PRICE_NUMERIC.toLocaleString('en-US')}`; 
+        
         // --- Gemini API Configuration ---
         const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=";
         // IMPORTANT: When hosting externally (e.g., GitHub Pages), you MUST insert your own API key here.
@@ -68,16 +74,26 @@
         
         // --- Core Application Logic ---
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. WhatsApp Link Setup
+            // 1. Dynamic Price Injection (Single Source of Truth)
+            document.getElementById('displayPrice').textContent = TIN_PRICE_NAIRA;
+            
+            // NEW LINE: Update the title of step 2 to include the dynamic price
+            document.getElementById('stepTwoTitle').textContent = `Pay the ${TIN_PRICE_NAIRA} Fee`;
+
+            // This line constructs the full sentence using the price variable, exactly as requested.
+            document.getElementById('stepTwoPriceText').textContent = `Make the one-time service payment of ${TIN_PRICE_NAIRA} for fast-track processing and certification.`;
+
+            // 2. WhatsApp Link Setup
             const phoneNumber = '2349085006059'; 
-            const message = encodeURIComponent("Yes! I want to get my Nigerian TIN and Certificate instantly for N3000. I need the fast track service.");
+            // The message uses the numeric price variable
+            const message = encodeURIComponent(`Yes! I want to get my Nigerian TIN and Certificate instantly for N${TIN_PRICE_NUMERIC}. I need the fast track service.`);
             const whatsappLink = `https://wa.me/${phoneNumber}?text=${message}`;
             
             document.querySelectorAll('.whatsapp-link').forEach(button => {
                 button.href = whatsappLink;
             });
 
-            // 2. Event Listener for LLM feature
+            // 3. Event Listener for LLM feature
             document.getElementById('fetchRequirementsBtn').addEventListener('click', fetchTINRequirements);
         });
 
@@ -250,7 +266,8 @@
         
         <!-- Header Section -->
         <header class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-secondary tracking-tight leading-tight">
+            <!-- Adjusted H1 size: text-3xl for mobile, scaling up to sm:text-5xl -->
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-secondary tracking-tight leading-tight">
                 GET YOUR NIGERIAN <span class="text-primary">TIN!</span>
             </h1>
             <p class="mt-4 text-xl sm:text-2xl text-gray-700 font-medium">
@@ -272,7 +289,8 @@
                 <!-- Fee Section -->
                 <div class="my-6 p-4 rounded-lg bg-primary text-white text-center">
                     <p class="text-xl font-semibold opacity-80">One-Time Fee:</p>
-                    <p class="text-5xl font-extrabold">₦3,500</p>
+                    <!-- Displayed price is now dynamically set by JavaScript using the variable -->
+                    <p id="displayPrice" class="text-4xl sm:text-5xl font-extrabold">₦3,500</p>
                 </div>
                 
                 <!-- Benefits List -->
@@ -313,8 +331,10 @@
                 
                 <div class="p-6 bg-white rounded-xl shadow-md border-b-4 border-primary hover:shadow-lg transition duration-300">
                     <div class="text-4xl text-primary font-extrabold mb-2">2</div>
-                    <h3 class="text-xl font-bold text-secondary mb-3">Pay the ₦3,500 Fee</h3>
-                    <p class="text-gray-600">Make the one-time service payment of ₦3,500 for fast-track processing and certification.</p>
+                    <!-- Added ID here to enable dynamic update -->
+                    <h3 id="stepTwoTitle" class="text-xl font-bold text-secondary mb-3">Pay the Fee</h3>
+                    <!-- This content is now fully managed by the script using the TIN_PRICE_NAIRA variable -->
+                    <p id="stepTwoPriceText" class="text-gray-600">Make the one-time service payment of the fee for fast-track processing and certification.</p>
                 </div>
                 
                 <div class="p-6 bg-white rounded-xl shadow-md border-b-4 border-primary hover:shadow-lg transition duration-300">
@@ -366,5 +386,4 @@
         </footer>
     </div>
 </body>
-
 </html>
